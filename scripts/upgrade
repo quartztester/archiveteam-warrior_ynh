@@ -1,7 +1,6 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
 
-ynh_abort_if_errors
 
 ynh_script_progression "Re-rendering compose config and systemd unit..."
 ynh_safe_rm "$install_dir/docker-compose.yml"
@@ -24,8 +23,8 @@ fi
 chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
 
 # Refresh the SSO tile logo if shipped with the package
-if [ -f "$YNH_APP_BASEDIR/conf/archiveteam-warrior.png" ]; then
-    cp "$YNH_APP_BASEDIR/conf/archiveteam-warrior.png" "/usr/share/yunohost/applogos/$app.png"
+if [ -f "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" ]; then
+    cp "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" "/usr/share/yunohost/applogos/$app.png"
     yunohost user permission update "$app.main" --logo "/usr/share/yunohost/applogos/$app.png" || true
 fi
 
