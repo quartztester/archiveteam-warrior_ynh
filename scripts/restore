@@ -1,0 +1,21 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+
+ynh_script_progression "Restoring Warrior config..."
+ynh_restore "$install_dir/docker-compose.yml"
+ynh_safe_rm "/etc/systemd/system/$app.service"
+ynh_restore "/etc/systemd/system/$app.service"
+mkdir -p "$install_dir/data"
+ynh_restore "$install_dir/data"
+mkdir -p "$install_dir/data"
+
+ynh_script_progression "Restarting Warrior..."
+systemctl daemon-reload
+systemctl restart "$app" || docker compose -f "$install_dir/docker-compose.yml" up -d
+
+# Re-render the custom nginx snippet (not part of the backup archive; on a
+# fresh machine the vhost dir may not even exist yet).
+domain=$(ynh_app_setting_get --key=domain || echo "")
+if [ -n "${domain:-}" ] && [ -d "/etc/nginx/conf.d/$domain.d" ]; then
+    ynh_config_add_nginx
+fi

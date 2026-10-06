@@ -1,0 +1,53 @@
+packaging_format = 2
+
+id = "archiveteam-warrior"
+name = "ArchiveTeam Warrior"
+description.en = "Volunteer web archiving: preserves dying websites by uploading snapshots to the Internet Archive (outbound-only, dashboard on localhost)"
+
+version = "4.2~ynh1"
+
+maintainers = []
+
+[upstream]
+license = "GPL-3.0"
+website = "https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior"
+code = "https://github.com/ArchiveTeam/warrior-dockerfile"
+
+[integration]
+yunohost = ">= 12.0"
+helpers_version = "2.1"
+architectures = ["amd64"]   # upstream warrior-dockerfile publishes linux/amd64 only
+multi_instance = false
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "10G"
+ram.build = "10M"
+ram.runtime = "600M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "all_users"
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+        main.url = "/"
+        # Warrior has no user concept and 401s on any Basic auth header that
+        # ssowat would inject; SSO still gates the URL itself.
+        main.auth_header = false
+
+    [resources.ports]
+    main.default = 8001
+    # Docker already binds 127.0.0.1:8001; no firewall exposure needed
+    main.exposure = "none"

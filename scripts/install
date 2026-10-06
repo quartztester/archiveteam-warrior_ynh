@@ -1,0 +1,80 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+
+ynh_abort_if_errors
+
+if [ "${path:-/}" != "/" ]; then
+    ynh_die --message="The Warrior dashboard uses absolute URLs and only works at the root of a domain — pick a (sub)domain with path '/'."
+fi
+
+if ! systemctl is-active --quiet docker; then
+    ynh_die --message="The docker service is not running. Install/enable docker first."
+fi
+
+# Leaderboard nickname = fullname of the first YunoHost admin (fallback: their
+# username, then 'warrior'). Stored as a setting so upgrades can reuse it.
+ynh_script_progression "Deriving leaderboard nickname from the YunoHost admin account..."
+nickname=$(yunohost user group info admins --output-as json 2>/dev/null | python3 -c '
+import json, re, subprocess, sys
+try:
+    members = json.load(sys.stdin).get("members") or []
+except Exception:
+    members = []
+user = members[0] if members else ""
+if user:
+    try:
+        out = subprocess.run(["yunohost", "user", "info", user, "--output-as", "json"],
+                             capture_output=True, text=True).stdout
+        user = json.loads(out).get("fullname") or user
+    except Exception:
+        pass
+user = re.sub(r"[^\w .\-]", "", user or "", flags=re.UNICODE).strip()
+print(user or "warrior")')
+ynh_app_setting_set --key=nickname --value="$nickname"
+ynh_print_info "Leaderboard nickname: $nickname"
+
+# No firewall rules: the warrior is outbound-only, dashboard on loopback.
+
+ynh_script_progression "Writing compose config (nickname: $nickname)..."
+ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docker-compose.yml"
+# Container's 'warrior' user is uid/gid 1000 — bind mounts must be writable by it
+mkdir -p "$install_dir/data" "$install_dir/projects"
+# The image's HEALTHCHECK and downloader expect wget-at* inside /data; seeding
+# them into an empty bind mount that would otherwise shadow the image's files.
+seed=$(docker create --entrypoint sh atdr.meo.ws/archiveteam/warrior-dockerfile:latest)
+for f in wget-at wget-at-gnutls wget-at-nss wget-at-openssl; do
+    docker cp "$seed:/home/warrior/data/$f" "$install_dir/data/$f" 2>/dev/null || true
+done
+docker rm "$seed" >/dev/null 2>&1 || true
+chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
+
+ynh_script_progression "Pulling Warrior image..."
+docker compose -f "$install_dir/docker-compose.yml" pull
+
+ynh_script_progression "Configuring systemd service..."
+ynh_config_add_systemd
+ynh_systemctl --service="$app" --action=start --log_path=systemd --timeout=300
+
+ynh_script_progression "Configuring nginx (SSO-gated)..."
+ynh_config_add_nginx
+
+# Custom tile logo for the SSO portal. $app.png in the applogos dir is the
+# supported override (see yunohost/app_catalog.py); the permission update also
+# pins the logo hash so the portal serves it for this permission.
+if [ -f "$YNH_APP_BASEDIR/conf/archiveteam-warrior.png" ]; then
+    cp "$YNH_APP_BASEDIR/conf/archiveteam-warrior.png" "/usr/share/yunohost/applogos/$app.png"
+    yunohost user permission update "$app.main" --logo "/usr/share/yunohost/applogos/$app.png" || true
+fi
+
+ynh_script_progression "Giving the warrior 15s to boot..."
+sleep 15
+# A fresh warrior with empty selected_project sits idle forever (tracker sends
+# 'auto' only when asked) — select 'auto' (ArchiveTeam's weighted choice).
+curl -s --max-time 5 -X POST "http://127.0.0.1:${port}/api/select-project" -d 'project_name=auto' >/dev/null 2>&1 || true
+if curl -s -o /dev/null --max-time 5 "http://127.0.0.1:${port}/"; then
+    ynh_print_warn "Warrior dashboard: https://$domain$path (SSO-gated). Also on loopback: http://127.0.0.1:${port}"
+else
+    ynh_print_warn "Dashboard not answering yet — check: docker logs $app"
+fi
+
+ynh_script_progression "ArchiveTeam Warrior installed. No router port-forward needed (outbound-only)."

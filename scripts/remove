@@ -1,0 +1,18 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+
+ynh_script_progression "Stopping Warrior container..."
+if [ -f "$install_dir/docker-compose.yml" ]; then
+    docker compose -f "$install_dir/docker-compose.yml" down --remove-orphans || true
+fi
+docker rm -f "$app" 2>/dev/null || true
+
+ynh_script_progression "Removing nginx and systemd unit..."
+ynh_config_remove_nginx
+ynh_config_remove_systemd
+systemctl daemon-reload
+ynh_safe_rm "/usr/share/yunohost/applogos/$app.png"
+
+ynh_safe_rm "$install_dir/docker-compose.yml"
+# /data holds unfinished WARCs; unfinished tracker items simply expire and
+# are re-queued by the tracker, so removing the app dir is safe.

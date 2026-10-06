@@ -1,0 +1,23 @@
+services:
+  warrior:
+    image: atdr.meo.ws/archiveteam/warrior-dockerfile:latest
+    container_name: __APP__
+    restart: unless-stopped
+    # WARRIOR_ID = leaderboard nickname (read when projects/config.json is first created)
+    environment:
+      - WARRIOR_ID=__NICKNAME__
+    ports:
+      # Dashboard on loopback only; nginx (SSO) fronts it. Host-side port
+      # comes from the port resource ($port) in case 8001 is taken.
+      - "127.0.0.1:__PORT__:8001"
+    volumes:
+      # in-progress WARC files (auto-uploaded to archive, then pruned)
+      - __INSTALL_DIR__/data:/home/warrior/data
+      # project code + config.json (nickname lives here once created)
+      - __INSTALL_DIR__/projects:/home/warrior/projects
+    mem_limit: 600m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
