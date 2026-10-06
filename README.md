@@ -28,8 +28,11 @@ uploads the results to the Internet Archive.
 
 ## Install
 
-```
-yunohost app install https://github.com/<you>/archiveteam-warrior_ynh \
+Webadmin: Settings → Applications → Install a custom app → paste this repo URL.
+CLI:
+
+```bash
+yunohost app install https://github.com/quartztester/archiveteam-warrior_ynh \
     -a "domain=warrior.example.com"
 ```
 
