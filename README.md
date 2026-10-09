@@ -11,16 +11,14 @@ It shall NOT be edited by hand.
 Volunteer web archiving: preserves dying websites by uploading snapshots to the Internet Archive (outbound-only, dashboard on localhost)
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior)
-[![Version: 4.2~ynh1](https://img.shields.io/badge/Version-4.2~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/archiveteam-warrior/)
+[![Version: 4.2~ynh1](https://img.shields.io/badge/Version-4.2~ynh1-rgb(18,138,11)?style=for-the-badge)
 
 <div align="center">
-<a href="https://apps.yunohost.org/app/archiveteam-warrior"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
-<a href="https://github.com/YunoHost-Apps/archiveteam-warrior_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
+<a href="https://github.com/quartztester/archiveteam-warrior_ynh#readme"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
+<a href="https://github.com/quartztester/archiveteam-warrior_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
 </div>
 
 ## 📦 Developer info
-
-[![Automatic tests level](https://apps.yunohost.org/badge/cilevel/archiveteam-warrior)](https://ci-apps.yunohost.org/ci/apps/archiveteam-warrior/)
 
 🛠️ Upstream ArchiveTeam Warrior repository: <https://github.com/ArchiveTeam/warrior-dockerfile>
 
