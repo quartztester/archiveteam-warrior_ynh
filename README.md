@@ -4,7 +4,7 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/archiveteam-warrior.png" width="32px" alt="Logo of ArchiveTeam Warrior">
+  <img src="doc/archiveteam-warrior.png" width="32px" alt="Logo of ArchiveTeam Warrior">
   ArchiveTeam Warrior, packaged for YunoHost
 </h1>
 
@@ -24,20 +24,13 @@ Volunteer web archiving: preserves dying websites by uploading snapshots to the 
 
 🛠️ Upstream ArchiveTeam Warrior repository: <https://github.com/ArchiveTeam/warrior-dockerfile>
 
-Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/archiveteam-warrior_ynh/tree/testing).
-
-The `testing` branch can be tested using:
+Pull requests are welcome against the `main` branch of this fork; install the development state directly with:
 ```
 # fresh install:
-sudo yunohost app install https://github.com/YunoHost-Apps/archiveteam-warrior_ynh/tree/testing
+sudo yunohost app install https://github.com/quartztester/archiveteam-warrior_ynh
 
 # upgrade an existing install:
-sudo yunohost app upgrade archiveteam-warrior -u https://github.com/YunoHost-Apps/archiveteam-warrior_ynh/tree/testing
-```
-
-You can also switch to the testing branch to update from testing by default (as same as for APT when you chose to use a testing repos) with this command:
-```bash
-sudo yunohost app setting archiveteam-warrior upgrade_channel -v testing
+sudo yunohost app upgrade archiveteam-warrior -u https://github.com/quartztester/archiveteam-warrior_ynh
 ```
 
 ### 📚 App packaging documentation
