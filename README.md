@@ -18,6 +18,10 @@ Volunteer web archiving: preserves dying websites by uploading snapshots to the 
 <a href="https://github.com/quartztester/archiveteam-warrior_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
 </div>
 
+## Screenshots
+
+![Warrior dashboard behind the portal](./doc/screenshots/dashboard.png)
+
 ## 📦 Developer info
 
 🛠️ Upstream ArchiveTeam Warrior repository: <https://github.com/ArchiveTeam/warrior-dockerfile>

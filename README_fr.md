@@ -15,3 +15,8 @@ Le Warrior d'ArchiveTeam est un outil bénévole qui télécharge automatiquemen
 
 - Projet amont : <https://github.com/ArchiveTeam/warrior-dockerimage>
 - Paquet YunoHost : <https://github.com/quartztester/archiveteam-warrior_ynh>
+
+## Screenshots
+
+![Warrior dashboard behind the portal](./doc/screenshots/dashboard.png)
+
