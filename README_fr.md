@@ -1,4 +1,7 @@
-# ArchiveTeam Warrior pour YunoHost
+<h1>
+  <img src="logos/archiveteam-warrior.png" width="48" alt="ArchiveTeam Warrior logo">
+  ArchiveTeam Warrior pour YunoHost
+</h1>
 
 Le Warrior d'ArchiveTeam est un outil bénévole qui télécharge automatiquement des données de sites web avant leur disparition, et les envoie vers Archive.org. Ce paquet exécute l'image Docker officielle du Warrior, orchestrée par YunoHost (compose + systemd).
 
@@ -18,5 +21,5 @@ Le Warrior d'ArchiveTeam est un outil bénévole qui télécharge automatiquemen
 
 ## Screenshots
 
-![Warrior dashboard behind the portal](./doc/screenshots/dashboard.png)
+![ArchiveTeam Warrior — dashboard](./doc/screenshots/dashboard.png)
 
