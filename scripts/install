@@ -1,14 +1,31 @@
 #!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# CHECK THE INSTALL PATH
+#=================================================
 
 if [ "${path:-/}" != "/" ]; then
     ynh_die --message="The Warrior dashboard uses absolute URLs and only works at the root of a domain — pick a (sub)domain with path '/'."
 fi
 
+#=================================================
+# ENSURE DOCKER IS RUNNING
+#=================================================
+
 if ! systemctl is-active --quiet docker; then
     ynh_die --message="The docker service is not running. Install/enable docker first."
 fi
+
+#=================================================
+# DERIVE AND STORE LEADERBOARD NICKNAME
+#=================================================
 
 # Leaderboard nickname = fullname of the first YunoHost admin (fallback: their
 # username, then 'warrior'). Stored as a setting so upgrades can reuse it.
@@ -34,6 +51,10 @@ ynh_print_info "Leaderboard nickname: $nickname"
 
 # No firewall rules: the warrior is outbound-only, dashboard on loopback.
 
+#=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
+
 ynh_script_progression "Writing compose config (nickname: $nickname)..."
 ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docker-compose.yml"
 # Container's 'warrior' user is uid/gid 1000 — bind mounts must be writable by it
@@ -47,15 +68,31 @@ done
 docker rm "$seed" >/dev/null 2>&1 || true
 chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
 
+#=================================================
+# PULL THE WARRIOR IMAGE
+#=================================================
+
 ynh_script_progression "Pulling Warrior image..."
 docker compose -f "$install_dir/docker-compose.yml" pull
+
+#=================================================
+# INSTALL AND START THE SYSTEMD SERVICE
+#=================================================
 
 ynh_script_progression "Configuring systemd service..."
 ynh_config_add_systemd
 ynh_systemctl --service="$app" --action=start --log_path=systemd --timeout=300
 
+#=================================================
+# CONFIGURE NGINX
+#=================================================
+
 ynh_script_progression "Configuring nginx (SSO-gated)..."
 ynh_config_add_nginx
+
+#=================================================
+# SET THE SSO TILE LOGO
+#=================================================
 
 # Custom tile logo for the SSO portal. $app.png in the applogos dir is the
 # supported override (see yunohost/app_catalog.py); the permission update also
@@ -64,6 +101,10 @@ if [ -f "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" ]; then
     cp "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" "/usr/share/yunohost/applogos/$app.png"
     yunohost user permission update "$app.main" --logo "/usr/share/yunohost/applogos/$app.png" || true
 fi
+
+#=================================================
+# BOOT THE WARRIOR AND SELECT A PROJECT
+#=================================================
 
 ynh_script_progression "Giving the warrior 15s to boot..."
 sleep 15
@@ -75,5 +116,9 @@ if curl -s -o /dev/null --max-time 5 "http://127.0.0.1:${port}/"; then
 else
     ynh_print_warn "Dashboard not answering yet — check: docker logs $app"
 fi
+
+#=================================================
+# END OF SCRIPT
+#=================================================
 
 ynh_script_progression "ArchiveTeam Warrior installed. No router port-forward needed (outbound-only)."

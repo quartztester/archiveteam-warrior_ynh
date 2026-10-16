@@ -1,6 +1,15 @@
 #!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# REAPPLY SYSTEM CONFIGURATION
+#=================================================
 
 ynh_script_progression "Re-rendering compose config and systemd unit..."
 ynh_safe_rm "$install_dir/docker-compose.yml"
@@ -8,9 +17,17 @@ ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docke
 ynh_safe_rm "/etc/systemd/system/$app.service"
 ynh_config_add_systemd
 
+#=================================================
+# REAPPLY NGINX CONFIGURATION
+#=================================================
+
 ynh_script_progression "Re-rendering nginx config..."
 ynh_safe_rm "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_config_add_nginx
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
 
 # Re-seed wget binaries if missing (installs predating this fix)
 if [ ! -f "$install_dir/data/wget-at-gnutls" ]; then
@@ -22,15 +39,27 @@ if [ ! -f "$install_dir/data/wget-at-gnutls" ]; then
 fi
 chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
 
+#=================================================
+# REFRESH THE SSO TILE LOGO
+#=================================================
+
 # Refresh the SSO tile logo if shipped with the package
 if [ -f "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" ]; then
     cp "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" "/usr/share/yunohost/applogos/$app.png"
     yunohost user permission update "$app.main" --logo "/usr/share/yunohost/applogos/$app.png" || true
 fi
 
+#=================================================
+# PULL THE NEW IMAGE AND RESTART THE SERVICE
+#=================================================
+
 ynh_script_progression "Pulling new Warrior image and recreating container..."
 docker compose -f "$install_dir/docker-compose.yml" pull
 systemctl daemon-reload
 systemctl restart "$app"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
 
 ynh_script_progression "Warrior upgrade complete."

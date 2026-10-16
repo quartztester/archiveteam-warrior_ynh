@@ -1,10 +1,23 @@
 #!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# CHECK THE NEW PATH
+#=================================================
 
 if [ "$path" != "/" ]; then
     ynh_die --message="The Warrior dashboard uses absolute URLs and only works at the root of a domain (path must be '/')."
 fi
+
+#=================================================
+# MODIFY URL IN NGINX CONF
+#=================================================
 
 ynh_script_progression "Moving $app from $old_domain$old_path to $domain$path..."
 
@@ -16,8 +29,16 @@ rmdir "/etc/nginx/conf.d/$old_domain.d" 2>/dev/null || true
 ynh_app_setting_set --key=domain --value="$domain"
 ynh_app_setting_set --key=path --value="$path"
 
+#=================================================
+# SPECIFIC MODIFICATIONS
+#=================================================
+
 # Re-render into the NEW vhost (also reloads nginx). The container itself is
 # loopback-only on a fixed port, so nothing to restart there.
 ynh_config_add_nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
 
 ynh_script_progression "Done. The tile moves to https://$domain$path (SSO-gated)."
