@@ -81,6 +81,7 @@ docker compose -f "$install_dir/docker-compose.yml" pull
 
 ynh_script_progression "Configuring systemd service..."
 ynh_config_add_systemd
+yunohost service add "$app" --description="ArchiveTeam Warrior" --test_status="docker ps --format '{{.Names}}' | grep -qx $app"
 ynh_systemctl --service="$app" --action=start --log_path=systemd --timeout=300
 
 #=================================================

@@ -50,4 +50,3 @@ ram.runtime = "600M"
     [resources.ports]
     main.default = 8001
     # Docker already binds 127.0.0.1:8001; no firewall exposure needed
-    main.exposure = "none"

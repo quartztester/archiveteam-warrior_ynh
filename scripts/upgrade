@@ -16,6 +16,7 @@ ynh_safe_rm "$install_dir/docker-compose.yml"
 ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docker-compose.yml"
 ynh_safe_rm "/etc/systemd/system/$app.service"
 ynh_config_add_systemd
+yunohost service add "$app" --description="ArchiveTeam Warrior" --test_status="docker ps --format '{{.Names}}' | grep -qx $app"
 
 #=================================================
 # REAPPLY NGINX CONFIGURATION
