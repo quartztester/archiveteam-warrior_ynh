@@ -4,7 +4,7 @@ id = "archiveteam-warrior"
 name = "ArchiveTeam Warrior"
 description.en = "Volunteer web archiving: preserves dying websites by uploading snapshots to the Internet Archive (outbound-only, dashboard on localhost)"
 
-version = "4.2~ynh1"
+version = "4.2~ynh2"
 
 maintainers = []
 
@@ -49,5 +49,4 @@ ram.runtime = "600M"
 
     [resources.ports]
     main.default = 8001
-    # Docker already binds 127.0.0.1:8001; no firewall exposure needed
-    main.exposure = "none"
+    # Docker binds 127.0.0.1:8001 itself; no firewall exposure

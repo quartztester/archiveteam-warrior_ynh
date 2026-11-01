@@ -11,7 +11,6 @@ ynh_script_progression "Moving $app from $old_domain$old_path to $domain$path...
 # Drop the nginx snippet from the OLD vhost (settings still hold old values;
 # the 'domain' env var here is the NEW one).
 ynh_safe_rm "/etc/nginx/conf.d/$old_domain.d/$app.conf"
-rmdir "/etc/nginx/conf.d/$old_domain.d" 2>/dev/null || true
 
 ynh_app_setting_set --key=domain --value="$domain"
 ynh_app_setting_set --key=path --value="$path"
