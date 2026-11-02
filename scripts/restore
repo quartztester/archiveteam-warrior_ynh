@@ -44,6 +44,7 @@ systemctl daemon-reload
 systemctl enable "$app" --quiet
 # Cold container: compose up pulls the image first and CI curls the web
 # port right after restore returns, so block here until it listens.
+port=$(ynh_app_setting_get --key=port)
 docker compose -f "$install_dir/docker-compose.yml" pull --quiet
 systemctl restart "$app" || docker compose -f "$install_dir/docker-compose.yml" up -d
 for _ in $(seq 1 90); do
