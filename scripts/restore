@@ -35,6 +35,8 @@ _archiveteam_ensure_docker() {
     fi
 }
 
+_archiveteam_ensure_docker
+
 ynh_script_progression "Restarting Warrior..."
 systemctl daemon-reload
 # Enable or the CI post-step `systemctl isolate multi-user.target` kills the
