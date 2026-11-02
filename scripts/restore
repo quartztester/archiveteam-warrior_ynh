@@ -1,5 +1,6 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
+source _common.sh
 
 ynh_script_progression "Restoring Warrior config..."
 ynh_restore "$install_dir/docker-compose.yml"
