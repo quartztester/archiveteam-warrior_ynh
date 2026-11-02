@@ -1,6 +1,10 @@
 services:
   warrior:
     image: atdr.meo.ws/archiveteam/warrior-dockerfile:latest
+    # CI/LXC hosts have AppArmor kernels but no apparmor_parser for
+    # docker-default; unconfined is the standard docker-in-container escape
+    security_opt:
+      - apparmor=unconfined
     container_name: __APP__
     restart: unless-stopped
     # WARRIOR_ID = leaderboard nickname (read when projects/config.json is first created)
