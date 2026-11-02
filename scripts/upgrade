@@ -1,6 +1,9 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
+source ../settings/scripts/_common.sh
 
+
+_archiveteam_ensure_docker
 
 ynh_script_progression "Re-rendering compose config and systemd unit..."
 # ensure dash-named plugin hardlink exists (see install; bookworm CLI only

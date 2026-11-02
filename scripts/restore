@@ -1,5 +1,6 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
+source ../settings/scripts/_common.sh
 
 ynh_script_progression "Restoring Warrior config..."
 ynh_restore "$install_dir/docker-compose.yml"
@@ -8,6 +9,8 @@ ynh_restore "/etc/systemd/system/$app.service"
 mkdir -p "$install_dir/data"
 ynh_restore "$install_dir/data"
 mkdir -p "$install_dir/data"
+
+_archiveteam_ensure_docker
 
 ynh_script_progression "Restarting Warrior..."
 systemctl daemon-reload

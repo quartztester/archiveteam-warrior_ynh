@@ -1,39 +1,14 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
+source ../settings/scripts/_common.sh
 
 
 if [ "${path:-/}" != "/" ]; then
     ynh_die --message="The Warrior dashboard uses absolute URLs and only works at the root of a domain — pick a (sub)domain with path '/'."
 fi
 
-if ! systemctl is-active --quiet docker; then
-    # Bootstrap Docker when absent (fresh server / CI container); skip when
-    # any daemon is already present (docker.io or docker-ce — never force
-    # one over the other, the packages conflict).
-    if ! command -v docker >/dev/null 2>&1; then
-        ynh_script_progression "Installing Docker (docker.io)..."
-        apt-get update -qq
-        DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install docker.io
-    fi
-    systemctl enable --now docker
-    for _ in $(seq 1 30); do docker info >/dev/null 2>&1 && break; sleep 2; done
-    docker info >/dev/null 2>&1 || ynh_die --message="Docker installed but the daemon did not come up."
-fi
+_archiveteam_ensure_docker
 
-if ! docker compose version >/dev/null 2>&1; then
-    ynh_script_progression "Installing docker compose v2 CLI plugin..."
-    mkdir -p /usr/local/lib/docker/cli-plugins
-    ynh_setup_source --source_id=compose --dest_dir="/usr/local/lib/docker/cli-plugins"
-    # the asset may land under its URL basename or the source-id name
-    # depending on prefetch naming — handle both.
-    if [ -e "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" ]; then
-        mv "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" /usr/local/lib/docker/cli-plugins/compose
-    fi
-    chmod 755 /usr/local/lib/docker/cli-plugins/compose
-    # Debian's docker.io 20.10 (bookworm) only discovers dash-named CLI
-    # plugins; newer CLIs want "compose". Hardlink = both work.
-    ln -f /usr/local/lib/docker/cli-plugins/compose /usr/local/lib/docker/cli-plugins/docker-compose
-fi
 
 # Leaderboard nickname = first YunoHost admin's fullname (fallback: username, then 'warrior'); stored as a setting so upgrades can reuse it.
 ynh_script_progression "Deriving leaderboard nickname from the YunoHost admin account..."
