@@ -3,3 +3,6 @@
 test_format = 1.0
 
 [default]
+    # Warrior dashboard is root-only (absolute URLs); install refuses
+    # sub-paths, so the subdir scenario cannot run.
+    exclude = ["install.subdir"]

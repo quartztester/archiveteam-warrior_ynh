@@ -7,7 +7,25 @@ if [ "${path:-/}" != "/" ]; then
 fi
 
 if ! systemctl is-active --quiet docker; then
-    ynh_die --message="The docker service is not running. Install/enable docker first."
+    # Bootstrap Docker when absent (fresh server / CI container); skip when
+    # any daemon is already present (docker.io or docker-ce — never force
+    # one over the other, the packages conflict).
+    if ! command -v docker >/dev/null 2>&1; then
+        ynh_script_progression "Installing Docker (docker.io)..."
+        apt-get update -qq
+        DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install docker.io
+    fi
+    systemctl enable --now docker
+    for _ in $(seq 1 30); do docker info >/dev/null 2>&1 && break; sleep 2; done
+    docker info >/dev/null 2>&1 || ynh_die --message="Docker installed but the daemon did not come up."
+fi
+
+if ! docker compose version >/dev/null 2>&1; then
+    ynh_script_progression "Installing docker compose v2 CLI plugin..."
+    mkdir -p /usr/local/lib/docker/cli-plugins
+    ynh_setup_source --source_id=compose --dest_dir="/usr/local/lib/docker/cli-plugins"
+    mv "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" /usr/local/lib/docker/cli-plugins/compose
+    chmod 755 /usr/local/lib/docker/cli-plugins/compose
 fi
 
 # Leaderboard nickname = first YunoHost admin's fullname (fallback: username, then 'warrior'); stored as a setting so upgrades can reuse it.

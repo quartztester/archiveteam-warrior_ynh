@@ -41,6 +41,12 @@ ram.runtime = "600M"
 
     [resources.install_dir]
 
+    # Compose v2 CLI plugin, only fetched when the host lacks it (bookworm
+    # ships no docker-compose-v2); single ELF binary, not an archive.
+    [resources.sources.compose]
+    url = "https://github.com/docker/compose/releases/download/v5.6.1/docker-compose-linux-x86_64"
+    sha256 = "47737f4236e6d3ccea7291995203f8f018058783b4c3a9469119811a0b5db8c0"
+
     [resources.permissions]
         main.url = "/"
         # Warrior has no user concept and 401s on any Basic auth header that
