@@ -24,7 +24,11 @@ if ! docker compose version >/dev/null 2>&1; then
     ynh_script_progression "Installing docker compose v2 CLI plugin..."
     mkdir -p /usr/local/lib/docker/cli-plugins
     ynh_setup_source --source_id=compose --dest_dir="/usr/local/lib/docker/cli-plugins"
-    mv "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" /usr/local/lib/docker/cli-plugins/compose
+    # the asset may land under its URL basename or the source-id name
+    # depending on prefetch naming — handle both.
+    if [ -e "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" ]; then
+        mv "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" /usr/local/lib/docker/cli-plugins/compose
+    fi
     chmod 755 /usr/local/lib/docker/cli-plugins/compose
 fi
 
