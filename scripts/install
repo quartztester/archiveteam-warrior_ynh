@@ -62,6 +62,9 @@ ynh_script_progression "Writing compose config (nickname: $nickname)..."
 ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docker-compose.yml"
 # Container's 'warrior' user is uid/gid 1000 — bind mounts must be writable by it
 mkdir -p "$install_dir/data" "$install_dir/projects"
+# Pull quietly first: a bare 'docker create' would drag the image in with
+# full layer progress on stderr, which CI counts as warnings
+docker pull --quiet atdr.meo.ws/archiveteam/warrior-dockerfile:latest 2>/dev/null
 # The image's HEALTHCHECK and downloader expect wget-at* inside /data; an empty bind mount would shadow the image's files.
 seed=$(docker create --entrypoint sh atdr.meo.ws/archiveteam/warrior-dockerfile:latest)
 for f in wget-at wget-at-gnutls wget-at-nss wget-at-openssl; do
@@ -69,9 +72,6 @@ for f in wget-at wget-at-gnutls wget-at-nss wget-at-openssl; do
 done
 docker rm "$seed" >/dev/null 2>&1 || true
 chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
-
-ynh_script_progression "Pulling Warrior image..."
-docker compose -f "$install_dir/docker-compose.yml" pull --quiet
 
 ynh_script_progression "Configuring systemd service..."
 ynh_config_add_systemd
