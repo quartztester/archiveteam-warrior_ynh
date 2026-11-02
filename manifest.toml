@@ -44,8 +44,8 @@ ram.runtime = "600M"
     # Compose v2 CLI plugin, only fetched when the host lacks it (bookworm
     # ships no docker-compose-v2); single ELF binary, not an archive.
     [resources.sources.compose]
-    url = "https://github.com/docker/compose/releases/download/v5.6.1/docker-compose-linux-x86_64"
-    sha256 = "47737f4236e6d3ccea7291995203f8f018058783b4c3a9469119811a0b5db8c0"
+    url = "https://github.com/docker/compose/releases/download/v2.39.1/docker-compose-linux-x86_64"
+    sha256 = "a5ea28722d5da628b59226626f7d6c33c89a7ed19e39f750645925242044c9d2"
 
     [resources.permissions]
         main.url = "/"

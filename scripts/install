@@ -68,7 +68,7 @@ docker rm "$seed" >/dev/null 2>&1 || true
 chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
 
 ynh_script_progression "Pulling Warrior image..."
-docker compose -f "$install_dir/docker-compose.yml" pull
+docker compose -f "$install_dir/docker-compose.yml" pull --quiet
 
 ynh_script_progression "Configuring systemd service..."
 ynh_config_add_systemd
