@@ -3,6 +3,12 @@ source /usr/share/yunohost/helpers
 
 
 ynh_script_progression "Re-rendering compose config and systemd unit..."
+# ensure dash-named plugin hardlink exists (see install; bookworm CLI only
+# discovers dash-named plugins)
+mkdir -p /usr/local/lib/docker/cli-plugins
+if [ -e /usr/local/lib/docker/cli-plugins/compose ]; then
+    ln -f /usr/local/lib/docker/cli-plugins/compose /usr/local/lib/docker/cli-plugins/docker-compose
+fi
 ynh_safe_rm "$install_dir/docker-compose.yml"
 ynh_config_add --template="docker-compose.yml" --destination="$install_dir/docker-compose.yml"
 ynh_safe_rm "/etc/systemd/system/$app.service"
@@ -29,7 +35,7 @@ if [ -f "$YNH_APP_BASEDIR/doc/archiveteam-warrior.png" ]; then
 fi
 
 ynh_script_progression "Pulling new Warrior image and recreating container..."
-docker compose -f "$install_dir/docker-compose.yml" pull
+docker compose -f "$install_dir/docker-compose.yml" pull -q
 systemctl daemon-reload
 systemctl restart "$app"
 

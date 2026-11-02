@@ -30,6 +30,9 @@ if ! docker compose version >/dev/null 2>&1; then
         mv "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" /usr/local/lib/docker/cli-plugins/compose
     fi
     chmod 755 /usr/local/lib/docker/cli-plugins/compose
+    # Debian's docker.io 20.10 (bookworm) only discovers dash-named CLI
+    # plugins; newer CLIs want "compose". Hardlink = both work.
+    ln -f /usr/local/lib/docker/cli-plugins/compose /usr/local/lib/docker/cli-plugins/docker-compose
 fi
 
 # Leaderboard nickname = first YunoHost admin's fullname (fallback: username, then 'warrior'); stored as a setting so upgrades can reuse it.
