@@ -42,7 +42,15 @@ systemctl daemon-reload
 # Enable or the CI post-step `systemctl isolate multi-user.target` kills the
 # restored-but-disabled unit before validation curls it.
 systemctl enable "$app" --quiet
+# Cold container: compose up pulls the image first and CI curls the web
+# port right after restore returns, so block here until it listens.
+docker compose -f "$install_dir/docker-compose.yml" pull --quiet
 systemctl restart "$app" || docker compose -f "$install_dir/docker-compose.yml" up -d
+for _ in $(seq 1 90); do
+    ss -ltn "sport = :$port" | grep -q LISTEN && break
+    sleep 5
+done
+ss -ltn "sport = :$port" | grep -q LISTEN || ynh_die --message="Warrior container did not come up after restore"
 
 # Re-render the custom nginx snippet (not part of the backup archive; on a
 # fresh machine the vhost dir may not even exist yet).
