@@ -1,6 +1,5 @@
 #!/bin/bash
 source /usr/share/yunohost/helpers
-source ../settings/scripts/_common.sh
 
 
 if [ "${path:-/}" != "/" ]; then
