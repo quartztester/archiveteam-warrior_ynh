@@ -33,6 +33,7 @@ LockPersonality=yes
  SystemCallArchitectures=native
  CapabilityBoundingSet=~CAP_SYS_BOOT CAP_SYS_MODULE CAP_SYS_PACCT
 
- SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap @cpu-emulation @privileged
+ # @privileged left out of the deny-list: it contains chown, which ExecStartPre needs
+ SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap @cpu-emulation
 [Install]
 WantedBy=multi-user.target
