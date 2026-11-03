@@ -13,7 +13,7 @@ ynh_restore "$install_dir/projects"   # selection + uid 1000 from tar
 _archiveteam_ensure_docker() {
     if ! systemctl is-active --quiet docker; then
         if ! command -v docker >/dev/null 2>&1; then
-            ynh_script_progression "Installing Docker (docker.io)..."
+            ynh_print_info "Installing Docker (docker.io)..."
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install docker.io
         fi
@@ -23,7 +23,7 @@ _archiveteam_ensure_docker() {
     fi
 
     if ! docker compose version >/dev/null 2>&1; then
-        ynh_script_progression "Installing docker compose v2 CLI plugin..."
+        ynh_print_info "Installing docker compose v2 CLI plugin..."
         mkdir -p /usr/local/lib/docker/cli-plugins
         ynh_setup_source --source_id=compose --dest_dir="/usr/local/lib/docker/cli-plugins"
         if [ -e "/usr/local/lib/docker/cli-plugins/docker-compose-linux-x86_64" ]; then
