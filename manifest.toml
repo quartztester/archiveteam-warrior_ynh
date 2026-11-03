@@ -40,10 +40,6 @@ ram.runtime = "600M"
     [resources.system_user]
 
     [resources.install_dir]
-        # container image runs as UID 1000; ownership must survive ynh's
-        # post-restore permission pass, which is why it is declared here
-        # and not chowned from the restore script
-        owner = "1000:1000"
 
     # Compose v2 CLI plugin, only fetched when the host lacks it (bookworm
     # ships no docker-compose-v2); single ELF binary, not an archive.
