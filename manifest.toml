@@ -4,7 +4,7 @@ id = "archiveteam-warrior"
 name = "ArchiveTeam Warrior"
 description.en = "Volunteer web archiving: preserves dying websites by uploading snapshots to the Internet Archive (outbound-only, dashboard on localhost)"
 
-version = "4.2~ynh2"
+version = "4.2~ynh3"
 
 maintainers = []
 
