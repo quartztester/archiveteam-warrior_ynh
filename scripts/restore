@@ -7,7 +7,11 @@ ynh_safe_rm "/etc/systemd/system/$app.service"
 ynh_restore "/etc/systemd/system/$app.service"
 mkdir -p "$install_dir/data"
 ynh_restore "$install_dir/data"
-mkdir -p "$install_dir/data"
+mkdir -p "$install_dir/data" "$install_dir/projects"
+
+# tar extracts as root:root but the container runs as UID 1000 and dies
+# on config.json writes without this
+chown -R 1000:1000 "$install_dir/data" "$install_dir/projects"
 
 _archiveteam_ensure_docker() {
     if ! systemctl is-active --quiet docker; then
