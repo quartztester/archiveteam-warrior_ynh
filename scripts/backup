@@ -5,3 +5,4 @@ ynh_print_info "Backing up Warrior config and in-progress data..."
 ynh_backup "$install_dir/docker-compose.yml"
 ynh_backup "/etc/systemd/system/$app.service"
 ynh_backup "$install_dir/data"
+ynh_backup "$install_dir/projects"   # tar preserves uid 1000, restore-side mkdir does not
