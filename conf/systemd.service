@@ -8,6 +8,10 @@ Requires=docker.service
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=__INSTALL_DIR__
+# ynh's post-restore permission pass reverts script chowns to root; the
+# container image hardcodes uid 1000 and crashloops without writable dirs
+ExecStartPre=/bin/chown -R 1000:1000 __INSTALL_DIR__/data __INSTALL_DIR__/projects
+ExecStartPre=/bin/chmod 755 __INSTALL_DIR__/data __INSTALL_DIR__/projects
 ExecStart=/usr/bin/docker compose up -d --quiet-pull
 # CI counts journal WARNINGs: compose pull progress lands there and trips
 # the "shitload of warnings" gate; the dashboard is not a unit-log source
@@ -17,11 +21,7 @@ ExecStop=/usr/bin/docker compose down
 TimeoutStartSec=300
 
 
-### Sandboxing baseline for a docker-CLI wrapper unit.
-### NB: no User= here on purpose — this unit only talks to the docker socket,
-### which YunoHost admins reach as root/docker-group; running the CLI as the
-### unprivileged app user would break container management. The container
-### itself drops privileges internally.
+# no User= on purpose: the unit only drives the docker socket as root; the container drops privileges itself.
  NoNewPrivileges=yes
  PrivateTmp=yes
  ProtectSystem=full
